@@ -1,6 +1,7 @@
 # Build plan
 
-Date: 2026-10-26. The why behind each choice is in [STACK.md](STACK.md).
+Date: 2026-10-26. The why behind each choice is in [STACK.md](STACK.md), and how the
+pieces connect is in [INFRA.md](INFRA.md).
 
 Target for the first month (deck): bots live in Slack and in meetings, collecting
 context, with per-person agents that finish routine tasks for design partners.
@@ -20,7 +21,7 @@ Rules for every loop:
 - One task per commit. If **Done when** cannot be met, write why under the task and stop.
 
 ```
- P0 foundations ──▶ P1 ingestion ──▶ P2 retrieval ──▶ P3 router ──▶ P4 swarm ──▶ P5 surfaces ──▶ P6 learning
+ P0 foundations ──▶ C collect context (Claude Code, Codex, Slack, Teams) ──▶ P1 app ingestion ──▶ P2 retrieval ──▶ P3 router ──▶ P4 swarm ──▶ P5 surfaces ──▶ P6 learning
    (week 1)          (week 1-2)        (week 2)         (week 2)      (week 3)      (week 3-4)       (week 4+)
                                                           │
                      P5a Slack bot can start right after P0 and run in parallel
@@ -40,7 +41,31 @@ Rules for every loop:
 - [ ] **P0.4 Deploy.** Vercel project, Neon Postgres, Blob for raw payloads.
   Done when: the preview URL passes `npm run smoke -- --url <preview>`.
 
-## P1. Ingestion and the event log
+## C. Collect context (first milestone, see INFRA.md §7)
+
+Runs right after P0.1. P0.3 (Google sign-in) can come later: C1 uses admin-issued tokens.
+
+- [ ] **C1 Monorepo split.** Move `agent/` to `apps/server/`, add `packages/core` with the
+  `OiEvent` schema (zod). Done when: `npm run dev` still works from the root and the smoke script passes.
+- [ ] **C2 Ingest + recall API.** `events` table (P1.1 below), per-user API tokens created by
+  `oi token create --user <email>`, `POST /oi/v1/events` (batched, idempotent) and
+  `POST /oi/v1/recall` on Postgres full-text, filtered by `visible_to`.
+  Done when: curl posts 3 events as admin, and recall as member returns only the ones visible to member.
+- [ ] **C3 Capture runtime.** `packages/capture`: one bundled `capture.cjs` that handles
+  SessionStart, UserPromptSubmit, PostToolUse and Stop JSON on stdin, redacts secrets, keeps
+  a cursor and offline queue. Done when: piping a sample Stop payload posts one event, and with the server down it queues and flushes on the next run.
+- [ ] **C4 Claude Code plugin.** `plugins/claude-code` + `.claude-plugin/marketplace.json`,
+  `userConfig` for server URL and token, remote MCP, hooks, `/oi:status`.
+  Done when: `claude plugin validate --strict` passes, and a fact from a session in one repo is injected into a new session's prompt the next day.
+- [ ] **C5 Slack passive ingest.** eve Slack channel: un-mentioned messages become events
+  with `visible_to` = channel members; mentions get an answer using recall.
+  Done when: Claude Code answers "what did #eng decide about X?" from a Slack message.
+- [ ] **C6 Codex plugin.** `plugins/codex` + `.agents/plugins/marketplace.json`, same
+  capture script, token from `oi login`. Done when: a Codex session's turn arrives as an event.
+- [ ] **C7 Teams ambient ingest.** Override eve Teams `onMessage`, manifest with
+  `ChannelMessage.Read.Group`. Done when: a standard-channel message arrives as an event without a mention.
+
+## P1. Ingestion from apps and the event log
 
 - [ ] **P1.1 Event log schema.** `events` table: id, org, source, source_id, actor,
   thread, ts, kind, content, `visible_to text[]`, raw_ref. Idempotent on (source, source_id).
