@@ -1,0 +1,14 @@
+node_modules
+.data
+.eve
+.vercel
+.workflow-data
+.env
+.env*.local
+*.tsbuildinfo
+.DS_Store
+.output
+
+# private notes and local users
+research/
+db/seed.local.sql

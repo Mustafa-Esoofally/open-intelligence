@@ -1,0 +1,31 @@
+{
+  "name": "open-intelligence",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "eve dev",
+    "build": "eve build",
+    "start": "eve start",
+    "info": "eve info",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --env-file-if-exists=.env.local --test agent/lib/composio.test.ts",
+    "db:up": "docker compose up -d --wait",
+    "db:migrate": "node --env-file-if-exists=.env.local scripts/db-migrate.ts"
+  },
+  "dependencies": {
+    "@composio/core": "^0.25.0",
+    "ai": "^7.0.137",
+    "eve": "^0.79.0",
+    "pg": "^8.23.1",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/pg": "^8.23.1",
+    "typescript": "^5.9.3"
+  }
+}
