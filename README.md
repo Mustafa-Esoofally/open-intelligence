@@ -1,43 +1,53 @@
 # Open Intelligence
 
-**The full stack for owning intelligence.**
+**Agents do 90% of the work. People do the 10% that needs them.**
 
-Every company will run on intelligence. Today it comes in pieces: a parser here, a
-vector database there, a memory library, a model router, a few MCP servers and a
-single-player chatbot. Every company that wants more ends up rebuilding the same stack
-in-house. Open Intelligence builds it once, in the open, as one system you own:
-ingest everything your company knows, retrieve it with permissions, remember what
-people teach it, route each task to the right model, and run swarms of agents that do
-the work while people make the decisions.
+Today the person is the integration layer. A request starts in one tool and ends in
+five: read the email, paste it into ChatGPT, hunt for the Slack thread and last week's
+notes, chase who owns it, find a time, copy the draft back. Thirty minutes of chasing
+for one minute of judgment.
+
+Open Intelligence gives every person an agent that does the work first. It reads the
+email overnight, pulls the thread, notes and account history, asks the owner's agent,
+holds a time with the other agents and drafts the reply with sources. You approve it in
+one click. Every approval and edit becomes memory, so the next one needs less of you.
+
+It is the stack the best AI-native companies built for themselves, as one open system
+the company owns: its models, its data, its memory, its integrations and its security.
+
+## The loop
 
 ```
-┌─────────────────────────── 6. EXPERIENCE ───────────────────────────┐
-│ where people work with agents: chat, Slack, meetings, your IDE      │
-├─────────────────────────── 5. AGENT SWARMS ─────────────────────────┤
-│ per-person agents, subagents, agent-to-agent work, proactive        │
-│ triggers, with approvals, budgets and permissions                   │
-├─────────────────────────── 4. ROUTER ───────────────────────────────┤
-│ picks the model per task by cost and quality, learns from results   │
-├─────────────────────────── 3. MEMORY ───────────────────────────────┤
-│ private, team and company memory, sourced, credited, versioned      │
-├─────────────────────────── 2. RETRIEVAL AT SCALE ───────────────────┤
-│ advanced RAG over the whole company: keyword + vector + graph,      │
-│ filtered by who is asking                                           │
-├─────────────────────────── 1. INGESTION ────────────────────────────┤
-│ every source (mail, Slack, Drive, meetings, code, tools), parsed    │
-│ into structure at ingest: entities, decisions, owners, commitments  │
-└─────────────────────────────────────────────────────────────────────┘
-  open and pluggable at every layer: your models, your vector DB, your connectors
+ Sources ──▶ Ingestion ──▶ Retrieval ──▶ Memory ──▶ Router ──▶ Agent swarms ──▶ Experience ──▶ You decide
+ Slack,      parsed into    hybrid        personal,   right model  per-person      Slack, Teams,   approve,
+ email,      entities,      keyword +     team,       per task,    agents,         meetings, web,  edit,
+ docs,       decisions,     vector +      company,    learned      subagents,      Claude Code,    decide
+ meetings,   owners,        graph, only   decision    from         agents asking   Codex
+ code, CRM   commitments    what you      memory      results      agents
+                            may see
+    ▲                                                                                          │
+    └──────────────────────────── every decision trains memory ◀───────────────────────────────┘
 ```
 
-| Layer | Today | Next |
-|---|---|---|
-| 1. Ingestion | Live reads from 500+ apps through Composio, per user | Continuous sync, document parsing, extraction of decisions and owners |
-| 2. Retrieval | Keyword recall over memory topics | Hybrid keyword + vector + graph search, permission-filtered |
-| 3. Memory | Git-backed private, team and company memory with attribution | Nightly consolidation ("dreaming") as reviewable changes |
-| 4. Router | One model, chosen by which key you set | Per-task routing by cost and quality, learned from outcomes |
-| 5. Agent swarms | Multiplayer chats, policy-gated tools, cross-person approvals | Background agents, subagents, agent-to-agent handoffs, budgets |
-| 6. Experience | Terminal UI and HTTP API | Approvals inbox, Slack bot, meeting bot, web workspace |
+## The stack
+
+Every piece exists somewhere as a part. Open Intelligence connects them into one loop
+with one identity and permission model running through all of it.
+
+| Layer | Built on | We add | Status |
+|---|---|---|---|
+| Agent runtime | [eve](https://eve.dev) (durable sessions, subagents, schedules, sandboxes) | multiplayer chats, membership, speaker tags | ✅ working |
+| Human in the loop | eve approvals | policy by action, role and amount; approver routing | ✅ working |
+| Memory | git repos of Markdown, optional [Supermemory](https://supermemory.ai) slot | private, team and company scopes, credit for who taught it | ✅ working |
+| Integrations | [Composio](https://composio.dev) (500+ apps, per-user OAuth) | policy class for every tool call | ✅ working |
+| Ingestion | Composio triggers, Supermemory connectors | event log with who could see what; decisions, owners, commitments | 🔨 next |
+| Retrieval | [turbopuffer](https://turbopuffer.com) (BM25 + vector, RRF) | permission filter on every query, runs as the caller | 🔨 next |
+| Router | [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) + [AI SDK](https://ai-sdk.dev) | model per task, budgets that pause and ask | 🔨 next |
+| Agent swarms | eve subagents, remote agents, Vercel Sandbox | agent-to-agent with scope rules, triggers from commitments | 📋 planned |
+| Experience | eve channels (Slack, Teams), MCP channel, Web Chat | Decision Inbox, Claude Code / Codex plugin, meeting bot | 📋 planned |
+| Learning | outcomes from every approval and edit | dreaming, autonomy ladder, router that gets cheaper | 📋 planned |
+
+The full analysis is in [`docs/STACK.md`](docs/STACK.md) and the build plan in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## What works today
 
@@ -206,14 +216,15 @@ Early and moving fast. Auth is dev-only: the `x-glass-user` header works only un
 - [x] Git-backed private, team and company memory with attribution
 - [x] Multiplayer chats with membership and sharing
 - [x] 500+ apps through Composio, with policy-gated writes
-- [ ] Approvals inbox, so approvers don't need to join each chat
-- [ ] Ingestion pipeline: continuous sync and document intelligence across every source
-- [ ] Advanced RAG: hybrid keyword, vector and graph retrieval with permissions
-- [ ] Dreaming: nightly memory cleanup proposed as a reviewable change, with undo
-- [ ] Router: per-task model choice that learns from a team's own results
-- [ ] Agent swarms: background agents, subagents and agent-to-agent work with budgets
-- [ ] Slack bot, meeting bot and a web workspace
-- [ ] Real SSO (OIDC) and deployment
+- [ ] Google sign-in, AI Gateway by default, one-click deploy
+- [ ] Ingestion: event log, backfill and extraction of decisions and commitments
+- [ ] Retrieval: permission-filtered hybrid search on turbopuffer
+- [ ] Router: model per task, per-person budgets that pause and ask
+- [ ] Agent swarms: subagents, triggers, agent-to-agent, sandboxes
+- [ ] Slack bot, Decision Inbox, Claude Code / Codex plugin, meeting bot
+- [ ] Learning: edit diffs, dreaming, autonomy ladder
 
-Design notes: [`docs/BRAIN.md`](docs/BRAIN.md), [`docs/ORG.md`](docs/ORG.md),
+Task-level detail with checks for each step: [`docs/PLAN.md`](docs/PLAN.md).
+
+Design notes: [`docs/STACK.md`](docs/STACK.md), [`docs/BRAIN.md`](docs/BRAIN.md), [`docs/ORG.md`](docs/ORG.md),
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
