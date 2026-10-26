@@ -1,6 +1,7 @@
 # Memory-first RAG: ingestion, retrieval and refresh
 
-Date: 2026-10-26. GitHub numbers pulled from the GitHub API on that date. Companion to
+Date: 2026-10-26. GitHub numbers pulled from the GitHub API on that date. Lessons from production teams that refine this design: [RAG-PRODUCTION.md](RAG-PRODUCTION.md).
+Companion to
 [INFRA.md](INFRA.md) (clients and contracts) and [STACK.md](STACK.md) (buy vs build).
 
 The goal: every data point a company produces (chat, email, docs, code, meetings, calls,
@@ -99,7 +100,8 @@ GitHub), Composio for actions, evaluate Nango for the long tail of syncs.
 
 Run in parallel, all filtered by `visible_to ContainsAny <caller + groups>` before anything is returned:
 1. **Keyword** (BM25) and **vector** over chunks: turbopuffer multi-query with `RRF`.
-2. **Graph**: facts about entities named in the query (Postgres).
+2. **Knowledge pages**: per person, customer, project and decision, built offline from the
+   graph and indexed like any document (Dropbox found live graph queries too slow).
 3. **Time**: "last week", "in Q3" → time-range filter.
 4. **Curated**: git brain topics for the caller's scopes.
 
