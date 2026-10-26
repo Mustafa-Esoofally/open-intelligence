@@ -1,7 +1,7 @@
 # Build plan
 
-Date: 2026-10-26. The why behind each choice is in [STACK.md](STACK.md), and how the
-pieces connect is in [INFRA.md](INFRA.md).
+Date: 2026-10-26. The why behind each choice is in [STACK.md](STACK.md), how the
+pieces connect is in [INFRA.md](INFRA.md), and the memory/RAG design is in [RAG.md](RAG.md).
 
 Target for the first month (deck): bots live in Slack and in meetings, collecting
 context, with per-person agents that finish routine tasks for design partners.
@@ -86,6 +86,15 @@ Runs right after P0.1. P0.3 (Google sign-in) can come later: C1 uses admin-issue
   Done when: 20 hand-labelled sample threads give commitment precision of 0.8 or better (script prints the score).
 - [ ] **P1.7 Spike: Supermemory connectors** for Drive, Notion, GitHub vs doing them via
   Composio. Done when: a recommendation is written into STACK.md.
+
+## R. RAG spikes (decide before P2, see RAG.md §8-9)
+
+- [ ] **R1 Eval set.** 50 questions with known source events, 10 permission-leak probes,
+  10 stale-answer probes, from our own Slack/GitHub/docs. Done when: `npm run eval:rag` scores a baseline.
+- [ ] **R2 Memory engine bake-off.** Hindsight vs Graphiti vs turbopuffer + Postgres facts on R1.
+  Done when: a table of recall@10, faithfulness, leaks, staleness, cost and latency is in RAG.md.
+- [ ] **R3 Parser check.** Docling vs MinerU on 20 real PDFs and decks. Done when: the pick is recorded in RAG.md.
+- [ ] **R4 Meeting bot.** Vexa vs Attendee vs Recall.ai. Done when: one bot joins a test Meet and its transcript lands as events.
 
 ## P2. Retrieval
 
