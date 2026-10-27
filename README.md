@@ -16,66 +16,28 @@ security. Built on [eve](https://eve.dev), Vercel's framework for durable agents
 
 ## Why
 
-Today the person is the integration layer. Every request starts in one tool and ends in five:
+![Today, the person is the integration layer](docs/images/problem.svg)
 
-- read the email, paste it into ChatGPT
-- hunt for the Slack thread and last week's notes
-- work out who owns it
-- find a time four people can meet
-- copy the draft back into Gmail
+Every request starts in one tool and ends in five. People read the email, paste it into
+ChatGPT, hunt for the Slack thread, chase the owner and find a time, then copy the draft
+back. AI chat tools haven't fixed this, because each one only sees what you paste in,
+setup lives with one person, and nothing it learns is kept.
 
-That is 29 minutes of chasing for 1 minute of judgment. And every person has to become
-their own AI engineer:
+## What changes
 
-| Problem | What we do instead |
-|---|---|
-| **Data is siloed and stale.** Each AI tool sees what you pasted in. | Slack, email, docs and meetings flow into one company memory, with permissions. |
-| **Setup lives with one person.** Skills, MCP servers and prompts sit in one account. | Connect once for the team. Skills spread to everyone. |
-| **Picking the model is your job.** Which model, which key, what it costs. | A router picks the model per task and learns which one works. |
-| **Nothing improves.** Every chat starts from zero. | Every approval and edit becomes memory, so the next one needs less of you. |
+![The agent does the work first](docs/images/proactive.svg)
 
-## What it looks like
-
-**A customer email, the old way vs with Open Intelligence:**
-
-```
- Today (head of ops, 60-person startup)       With Open Intelligence
- ────────────────────────────────────────     ─────────────────────────────────────────
- 9:02  pastes the email into ChatGPT          7:40  agent reads the email overnight
- 9:06  searches Slack for the thread          7:41  pulls the thread, notes, account history
- 9:11  digs up last week's meeting notes      7:42  finds the owner (Sam), asks Sam's agent
- 9:15  works out who owns it                  7:44  holds Thu 2pm with the other agents
- 9:22  finds a time four people can meet      7:45  drafts the reply with sources
- 9:30  copies the draft back into Gmail       9:02  she approves it in one click
- ────────────────────────────────────────     ─────────────────────────────────────────
- 29 min of chasing, 1 min of judgment         1 min, all of it judgment
-```
-
-**In a meeting:** the bot joins the call, surfaces facts live (deal size, SOC 2 status,
-owner), asks the open question, coordinates with teammates' agents, drafts the
-follow-ups, and the recap is waiting in Slack before the call ends.
+The agent works **before** you ask: overnight, after a meeting, before a deadline. It
+gathers the context, asks other people's agents, and hands you a decision. In a meeting,
+the bot surfaces facts live (deal size, SOC 2 status, owner), drafts the follow-ups, and
+the recap is waiting in Slack before the call ends.
 
 ## How it works
 
+![Every piece exists in parts. We connect them into one loop](docs/images/loop.svg)
+
 Every piece exists somewhere as a part. Open Intelligence connects them into one loop,
 with one identity and permission model running through all of it.
-
-```
-  ┌─────────┐   ┌───────────┐   ┌───────────┐   ┌────────┐   ┌────────┐
-  │ Sources │──▶│ Ingestion │──▶│ Knowledge │──▶│ Memory │──▶│ Router │
-  └─────────┘   └───────────┘   └───────────┘   └────────┘   └───┬────┘
-   Slack, email   entities,       agentic search   personal,      right model
-   meetings,      decisions,      over files the   team, company, per task
-   docs, code     owners, with    caller may see   decisions
-                  permissions                                       │
-       ▲                                                            ▼
-       │        ┌──────────────┐   ┌────────────┐   ┌──────────────────┐
-       └────────│ You decide   │◀──│ Experience │◀──│ Agent swarms     │
-   every        │ approve,     │   │ Slack,     │   │ per-person agent,│
-   decision     │ edit, decide │   │ Teams, web,│   │ subagents, your  │
-   trains       └──────────────┘   │ Claude Code│   │ own agents, cron │
-   memory                          └────────────┘   └──────────────────┘
-```
 
 | Layer | What it does | Built on |
 |---|---|---|
@@ -90,6 +52,14 @@ with one identity and permission model running through all of it.
 
 Why each piece was chosen: [docs/DECISIONS.md](docs/DECISIONS.md). How the parts fit:
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Where this is going
+
+![Every company runs on its own open intelligence stack](docs/images/stack.svg)
+
+Every team (ops, sales, engineering, support, finance) uses one shared stack that the
+company owns and runs. Any model plugs in underneath, decision memory builds up inside the
+company instead of inside a vendor, and the router gets cheaper as it learns.
 
 ## What works today
 

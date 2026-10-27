@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <style>
+    .title { font-size: 30px; font-weight: 700; fill: #111827; }
+    .accent { fill: #2F6BDF; }
+    .sub { font-size: 17px; fill: #6B7280; }
+    .l { font-size: 17px; font-weight: 700; fill: #111827; }
+    .d { font-size: 15px; fill: #6B7280; }
+    .pill { font-size: 15px; font-weight: 600; fill: #1F2937; }
+    .cap { font-size: 14px; fill: #6B7280; }
+  </style>
+  <rect width="1200" height="720" rx="16" fill="#FFFFFF"/>
+  <text x="40" y="58" class="title">The end goal: <tspan class="accent">every company runs on its own open intelligence stack</tspan></text>
+  <text x="40" y="90" class="sub">Others rent you a closed assistant. Here the company owns the models, data, memory, integrations and security.</text>
+
+  <!-- teams -->
+  <text x="600" y="136" text-anchor="middle" class="cap">EVERY TEAM, ONE SCREEN: ASK ANYTHING, SPAWN AGENTS</text>
+  <g>
+    <rect x="148" y="152" width="150" height="40" rx="20" fill="#EAF1FD"/><text x="223" y="178" text-anchor="middle" class="pill">Ops and founders</text>
+    <rect x="314" y="152" width="110" height="40" rx="20" fill="#EAF1FD"/><text x="369" y="178" text-anchor="middle" class="pill">Sales</text>
+    <rect x="440" y="152" width="140" height="40" rx="20" fill="#EAF1FD"/><text x="510" y="178" text-anchor="middle" class="pill">Engineering</text>
+    <rect x="596" y="152" width="120" height="40" rx="20" fill="#EAF1FD"/><text x="656" y="178" text-anchor="middle" class="pill">Support</text>
+    <rect x="732" y="152" width="120" height="40" rx="20" fill="#EAF1FD"/><text x="792" y="178" text-anchor="middle" class="pill">Finance</text>
+    <rect x="868" y="152" width="184" height="40" rx="20" fill="#2F6BDF"/><text x="960" y="178" text-anchor="middle" class="pill" style="fill:#FFFFFF">Everyone else</text>
+  </g>
+
+  <!-- company container -->
+  <rect x="150" y="214" width="900" height="420" rx="16" fill="none" stroke="#2F6BDF" stroke-width="2" stroke-dasharray="8 7"/>
+  <text x="178" y="246" font-size="15" font-weight="700" class="accent">Your company</text>
+
+  <g>
+    <rect x="178" y="262" width="844" height="52" rx="10" fill="#F3F4F6"/><rect x="178" y="262" width="6" height="52" rx="3" fill="#2F6BDF"/>
+    <text x="202" y="294" class="l">Agent swarms + human in the loop</text><text x="620" y="294" class="d">agents do the work, people decide</text>
+
+    <rect x="178" y="324" width="844" height="52" rx="10" fill="#F3F4F6"/><rect x="178" y="324" width="6" height="52" rx="3" fill="#2F6BDF"/>
+    <text x="202" y="356" class="l">Learnings and decision memory</text><text x="620" y="356" class="d">how your team decides, precedents</text>
+
+    <rect x="178" y="386" width="844" height="52" rx="10" fill="#F3F4F6"/><rect x="178" y="386" width="6" height="52" rx="3" fill="#2F6BDF"/>
+    <text x="202" y="418" class="l">Knowledge from every source</text><text x="620" y="418" class="d">live, permission-aware, with sources</text>
+
+    <rect x="178" y="448" width="844" height="52" rx="10" fill="#F3F4F6"/><rect x="178" y="448" width="6" height="52" rx="3" fill="#2F6BDF"/>
+    <text x="202" y="480" class="l">Shared skills, MCPs and apps</text><text x="620" y="480" class="d">connected once for the whole team</text>
+
+    <rect x="178" y="510" width="844" height="52" rx="10" fill="#F3F4F6"/><rect x="178" y="510" width="6" height="52" rx="3" fill="#2F6BDF"/>
+    <text x="202" y="542" class="l">Isolated per person</text><text x="620" y="542" class="d">own sandbox, browser, keys, permissions</text>
+
+    <rect x="178" y="572" width="844" height="52" rx="10" fill="#F3F4F6"/><rect x="178" y="572" width="6" height="52" rx="3" fill="#2F6BDF"/>
+    <text x="202" y="604" class="l">Router over open and closed models</text><text x="620" y="604" class="d">the best model per task, your keys</text>
+  </g>
+
+  <!-- providers -->
+  <text x="600" y="666" text-anchor="middle" class="cap">Model providers plug in underneath and can be swapped</text>
+  <g>
+    <rect x="380" y="680" width="130" height="30" rx="15" fill="#F3F4F6"/><text x="445" y="700" text-anchor="middle" class="cap" style="fill:#374151">Anthropic</text>
+    <rect x="520" y="680" width="100" height="30" rx="15" fill="#F3F4F6"/><text x="570" y="700" text-anchor="middle" class="cap" style="fill:#374151">OpenAI</text>
+    <rect x="630" y="680" width="100" height="30" rx="15" fill="#F3F4F6"/><text x="680" y="700" text-anchor="middle" class="cap" style="fill:#374151">Google</text>
+    <rect x="740" y="680" width="130" height="30" rx="15" fill="#F3F4F6"/><text x="805" y="700" text-anchor="middle" class="cap" style="fill:#374151">open models</text>
+  </g>
+</svg>

@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <style>
+    .title { font-size: 30px; font-weight: 700; fill: #111827; }
+    .accent { fill: #2F6BDF; }
+    .ct { font-size: 18px; font-weight: 700; fill: #111827; }
+    .cb { font-size: 14px; fill: #4B5563; }
+    .on { font-size: 12px; fill: #6B7280; font-style: italic; }
+    .w { fill: #FFFFFF; }
+    .wb { fill: #DCE7FB; }
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6B7280"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2F6BDF"/></marker>
+  </defs>
+  <rect width="1200" height="620" rx="16" fill="#FFFFFF"/>
+  <text x="40" y="58" class="title">Every piece exists in parts. <tspan class="accent">We connect them into one loop.</tspan></text>
+
+  <!-- top row -->
+  <rect x="40" y="100" width="200" height="190" rx="12" fill="#F3F4F6"/>
+  <text x="60" y="134" class="ct">Sources</text>
+  <text x="60" y="162" class="cb">Slack, email, meetings,</text>
+  <text x="60" y="182" class="cb">docs, code, CRM</text>
+  <text x="60" y="270" class="on">Composio, webhooks</text>
+
+  <rect x="270" y="100" width="200" height="190" rx="12" fill="#F3F4F6"/>
+  <text x="290" y="134" class="ct">Ingestion</text>
+  <text x="290" y="162" class="cb">Everything becomes</text>
+  <text x="290" y="182" class="cb">documents with who can</text>
+  <text x="290" y="202" class="cb">see them, plus decisions,</text>
+  <text x="290" y="222" class="cb">owners, commitments</text>
+  <text x="290" y="270" class="on">Postgres</text>
+
+  <rect x="500" y="100" width="200" height="190" rx="12" fill="#F3F4F6"/>
+  <text x="520" y="134" class="ct">Knowledge</text>
+  <text x="520" y="162" class="cb">Agentic search over the</text>
+  <text x="520" y="182" class="cb">files you're allowed to</text>
+  <text x="520" y="202" class="cb">see: grep, glob, read,</text>
+  <text x="520" y="222" class="cb">with sources</text>
+  <text x="520" y="270" class="on">eve sandbox</text>
+
+  <rect x="730" y="100" width="200" height="190" rx="12" fill="#F3F4F6"/>
+  <text x="750" y="134" class="ct">Memory</text>
+  <text x="750" y="162" class="cb">Personal, team and</text>
+  <text x="750" y="182" class="cb">company memory, plus</text>
+  <text x="750" y="202" class="cb">decisions, credited to</text>
+  <text x="750" y="222" class="cb">who taught it</text>
+  <text x="750" y="270" class="on">git + Markdown</text>
+
+  <rect x="960" y="100" width="200" height="190" rx="12" fill="#F3F4F6"/>
+  <text x="980" y="134" class="ct">Router</text>
+  <text x="980" y="162" class="cb">The right model for each</text>
+  <text x="980" y="182" class="cb">task, learned from</text>
+  <text x="980" y="202" class="cb">results. Open models,</text>
+  <text x="980" y="222" class="cb">your keys</text>
+  <text x="980" y="270" class="on">AI Gateway</text>
+
+  <g stroke="#6B7280" stroke-width="2" marker-end="url(#a)">
+    <line x1="242" y1="195" x2="266" y2="195"/>
+    <line x1="472" y1="195" x2="496" y2="195"/>
+    <line x1="702" y1="195" x2="726" y2="195"/>
+    <line x1="932" y1="195" x2="956" y2="195"/>
+    <line x1="1060" y1="292" x2="1060" y2="350"/>
+    <line x1="728" y1="440" x2="672" y2="440"/>
+    <line x1="352" y1="440" x2="314" y2="440"/>
+  </g>
+
+  <!-- bottom row -->
+  <rect x="40" y="355" width="270" height="170" rx="12" fill="#F3F4F6"/>
+  <text x="60" y="389" class="ct">Human in the loop</text>
+  <text x="60" y="417" class="cb">Decision cards: approve, edit,</text>
+  <text x="60" y="437" class="cb">decide. Autonomy is earned</text>
+  <text x="60" y="457" class="cb">over time</text>
+  <text x="60" y="505" class="on">eve approvals + our policy</text>
+
+  <rect x="355" y="355" width="315" height="170" rx="12" fill="#F3F4F6"/>
+  <text x="375" y="389" class="ct">Experience on demand</text>
+  <text x="375" y="417" class="cb">Slack, Teams, meetings, web,</text>
+  <text x="375" y="437" class="cb">Claude Code and Codex. Ask</text>
+  <text x="375" y="457" class="cb">anything, spawn agents</text>
+  <text x="375" y="505" class="on">eve channels, MCP</text>
+
+  <rect x="730" y="355" width="430" height="170" rx="12" fill="#2F6BDF"/>
+  <text x="752" y="389" class="ct w">Agent swarms</text>
+  <text x="752" y="417" class="cb wb">A main agent for any task, specialist subagents,</text>
+  <text x="752" y="437" class="cb wb">dynamic workflows, agents you define yourself,</text>
+  <text x="752" y="457" class="cb wb">agents asking agents. Durable, in the background,</text>
+  <text x="752" y="477" class="cb wb">budgeted</text>
+  <text x="752" y="505" class="on wb">eve subagents, workflows, schedules</text>
+
+  <!-- feedback -->
+  <path d="M175 353 V318 H830 V296" fill="none" stroke="#2F6BDF" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#b)"/>
+  <text x="200" y="311" font-size="14" font-weight="700" class="accent">every decision trains memory</text>
+
+  <text x="40" y="575" font-size="17" fill="#374151">For all knowledge work: <tspan font-weight="700" class="accent">everyone gets the context they're allowed to see</tspan>, agents do the work, people decide.</text>
+</svg>

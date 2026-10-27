@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <style>
+    .title { font-size: 30px; font-weight: 700; fill: #111827; }
+    .sub { font-size: 17px; fill: #6B7280; }
+    .tool { font-size: 16px; font-weight: 600; fill: #111827; }
+    .act { font-size: 13px; fill: #6B7280; }
+    .num { font-size: 13px; font-weight: 700; fill: #FFFFFF; }
+    .ct { font-size: 17px; font-weight: 700; fill: #111827; }
+    .cb { font-size: 14px; fill: #4B5563; }
+    .accent { fill: #2F6BDF; }
+  </style>
+  <rect width="1200" height="660" rx="16" fill="#FFFFFF"/>
+  <text x="40" y="58" class="title">Today, <tspan class="accent">the person is the integration layer</tspan></text>
+  <text x="40" y="90" class="sub">One request starts in one tool and ends in five. Every hop is copy, paste and chase.</text>
+
+  <!-- spokes -->
+  <g stroke="#9CA3AF" stroke-width="2" stroke-dasharray="6 6">
+    <line x1="340" y1="370" x2="340" y2="170"/>
+    <line x1="340" y1="370" x2="555" y2="260"/>
+    <line x1="340" y1="370" x2="555" y2="480"/>
+    <line x1="340" y1="370" x2="340" y2="570"/>
+    <line x1="340" y1="370" x2="125" y2="480"/>
+    <line x1="340" y1="370" x2="125" y2="260"/>
+  </g>
+
+  <!-- person -->
+  <circle cx="340" cy="370" r="62" fill="#2F6BDF"/>
+  <circle cx="340" cy="352" r="15" fill="#FFFFFF"/>
+  <path d="M312 395 a28 22 0 0 1 56 0 z" fill="#FFFFFF"/>
+
+  <!-- tools: box 200x58 centered on spoke ends -->
+  <g>
+    <rect x="240" y="141" width="200" height="58" rx="10" fill="#F3F4F6" stroke="#E5E7EB"/>
+    <circle cx="262" cy="170" r="11" fill="#111827"/><text x="262" y="175" class="num" text-anchor="middle">1</text>
+    <text x="282" y="166" class="tool">Email</text><text x="282" y="185" class="act">read the request</text>
+  </g>
+  <g>
+    <rect x="455" y="231" width="200" height="58" rx="10" fill="#F3F4F6" stroke="#E5E7EB"/>
+    <circle cx="477" cy="260" r="11" fill="#111827"/><text x="477" y="265" class="num" text-anchor="middle">2</text>
+    <text x="497" y="256" class="tool">ChatGPT</text><text x="497" y="275" class="act">paste it in</text>
+  </g>
+  <g>
+    <rect x="455" y="451" width="200" height="58" rx="10" fill="#F3F4F6" stroke="#E5E7EB"/>
+    <circle cx="477" cy="480" r="11" fill="#111827"/><text x="477" y="485" class="num" text-anchor="middle">3</text>
+    <text x="497" y="476" class="tool">Slack</text><text x="497" y="495" class="act">find the thread</text>
+  </g>
+  <g>
+    <rect x="240" y="541" width="200" height="58" rx="10" fill="#F3F4F6" stroke="#E5E7EB"/>
+    <circle cx="262" cy="570" r="11" fill="#111827"/><text x="262" y="575" class="num" text-anchor="middle">4</text>
+    <text x="282" y="566" class="tool">Meeting notes</text><text x="282" y="585" class="act">dig up last week</text>
+  </g>
+  <g>
+    <rect x="25" y="451" width="200" height="58" rx="10" fill="#F3F4F6" stroke="#E5E7EB"/>
+    <circle cx="47" cy="480" r="11" fill="#111827"/><text x="47" y="485" class="num" text-anchor="middle">5</text>
+    <text x="67" y="476" class="tool">Docs and CRM</text><text x="67" y="495" class="act">work out the owner</text>
+  </g>
+  <g>
+    <rect x="25" y="231" width="200" height="58" rx="10" fill="#F3F4F6" stroke="#E5E7EB"/>
+    <circle cx="47" cy="260" r="11" fill="#111827"/><text x="47" y="265" class="num" text-anchor="middle">6</text>
+    <text x="67" y="256" class="tool">Calendar</text><text x="67" y="275" class="act">find a time for four</text>
+  </g>
+
+  <text x="340" y="634" text-anchor="middle" font-size="18" font-weight="700" class="accent">29 minutes of chasing, 1 minute of judgment</text>
+
+  <!-- why AI hasn't fixed it -->
+  <line x1="700" y1="130" x2="700" y2="620" stroke="#E5E7EB" stroke-width="2"/>
+  <text x="740" y="146" font-size="15" font-weight="700" fill="#6B7280" letter-spacing="1">WHY AI HASN'T FIXED IT</text>
+
+  <rect x="740" y="166" width="420" height="98" rx="10" fill="#F3F4F6"/>
+  <text x="762" y="198" class="ct">Data is siloed and stale</text>
+  <text x="762" y="224" class="cb">Each AI tool sees only what you pasted in.</text>
+  <text x="762" y="245" class="cb">Nothing stays in sync with Slack, email, docs.</text>
+
+  <rect x="740" y="278" width="420" height="98" rx="10" fill="#F3F4F6"/>
+  <text x="762" y="310" class="ct">Setup lives with one person</text>
+  <text x="762" y="336" class="cb">Skills, MCP servers and prompts sit in one</text>
+  <text x="762" y="357" class="cb">account. Nothing is shared with the team.</text>
+
+  <rect x="740" y="390" width="420" height="98" rx="10" fill="#F3F4F6"/>
+  <text x="762" y="422" class="ct">Picking the model is your job</text>
+  <text x="762" y="448" class="cb">Which model, which plan, which key, what it</text>
+  <text x="762" y="469" class="cb">costs. Most people shouldn't have to know.</text>
+
+  <rect x="740" y="502" width="420" height="98" rx="10" fill="#F3F4F6"/>
+  <text x="762" y="534" class="ct">Nothing improves on its own</text>
+  <text x="762" y="560" class="cb">Every chat starts from zero. Corrections are</text>
+  <text x="762" y="581" class="cb">forgotten, so the same work repeats.</text>
+</svg>
