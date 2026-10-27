@@ -1,4 +1,4 @@
-# open-glass Org Model: Users, Teams, Approvals, Spend, Context
+# Open Intelligence Org Model: Users, Teams, Approvals, Spend, Context
 
 How a company runs on open-glass: who can do what, who approves what, how money and tokens are controlled, and how the agent reaches files and drives without leaking them.
 

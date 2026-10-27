@@ -1,7 +1,7 @@
 # Build plan
 
-Date: 2026-10-26. The why behind each choice is in [STACK.md](STACK.md), how the
-pieces connect is in [INFRA.md](INFRA.md), and the memory/RAG design is in [RAG.md](RAG.md).
+Date: 2026-10-27. Milestones are in [ROADMAP.md](ROADMAP.md), the reasons in
+[DECISIONS.md](DECISIONS.md), and how the parts fit in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 Target for the first month (deck): bots live in Slack and in meetings, collecting
 context, with per-person agents that finish routine tasks for design partners.
@@ -21,11 +21,41 @@ Rules for every loop:
 - One task per commit. If **Done when** cannot be met, write why under the task and stop.
 
 ```
- P0 foundations ──▶ C collect context (Claude Code, Codex, Slack, Teams) ──▶ P1 app ingestion ──▶ P2 retrieval ──▶ P3 router ──▶ P4 swarm ──▶ P5 surfaces ──▶ P6 learning
+ K agents that know things ──▶ A your own agents ──▶ P0 foundations ──▶ C collect context (Claude Code, Codex, Slack, Teams) ──▶ P1 app ingestion ──▶ P2 retrieval ──▶ P3 router ──▶ P4 swarm ──▶ P5 surfaces ──▶ P6 learning
    (week 1)          (week 1-2)        (week 2)         (week 2)      (week 3)      (week 3-4)       (week 4+)
                                                           │
                      P5a Slack bot can start right after P0 and run in parallel
 ```
+
+## K. Agents that know things (current, ROADMAP M1)
+
+- [ ] **K1 Knowledge table.** `knowledge` in `db/schema.sql`: id, org, source, source_id,
+  url, title, people text[], ts, `visible_to text[]`, body. Idempotent on (org, source, source_id).
+  Done when: migrate runs twice cleanly.
+- [ ] **K2 Seed.** `scripts/knowledge-seed.ts` loads `docs/*.md` (visible to the whole org)
+  and a sample Slack export with one admin-only channel. Done when: rows exist for both.
+- [ ] **K3 Sandbox sync.** At session start, write the caller's visible documents to
+  `/workspace/knowledge/<source>/<id>.md` with frontmatter. Add eve `grep` and `glob`.
+  Done when: in a chat, `glob knowledge/**` as member lists no admin-only files, and as admin it does.
+- [ ] **K4 Search instructions.** Instructions that tell the agent to search knowledge
+  before answering and cite file paths. Done when: "what did we decide about deploy
+  freezes?" answers with a cited file.
+- [ ] **K5 Researcher subagent.** `agent/subagents/researcher/`: read-only tools, its own
+  instructions. Done when: a deep question shows a researcher task in the session stream.
+- [ ] **K6 Dynamic workflow.** `agent/tools/workflow.ts` with eve's `workflow`. Done when:
+  a three-part question runs three subagents in parallel (three tasks in the stream).
+- [ ] **K7 Baseline eval.** `npm run eval:knowledge`: 20+ questions with expected source
+  files, 5 permission-leak probes. Done when: it prints a score. Then repeat on pgvector to compare.
+
+## A. Your own agents (ROADMAP M2)
+
+- [ ] **A1 Agents table.** name, instructions, tools text[], schedule, owner, visible_to, enabled.
+- [ ] **A2 Tools.** `save_agent`, `list_agents`, `run_agent`; sharing an agent beyond the
+  owner needs approval. Done when: an agent saved as member is invisible to a non-member.
+- [ ] **A3 Worker subagent.** Generic `worker` that runs a saved agent's instructions with
+  only its allowed tools. Done when: `run_agent` returns that agent's answer.
+- [ ] **A4 Dispatcher.** `agent/schedules/dispatch.ts` every minute: lease due rows, run
+  them, deliver the result to the owner. Done when: a 2-minute schedule fires twice.
 
 ## P0. Foundations
 

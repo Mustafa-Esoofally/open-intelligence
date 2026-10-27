@@ -1,188 +1,137 @@
-# open-glass Architecture
+# Architecture
 
-Goal: an open-source, self-hostable Ramp Glass. Every employee gets a preconfigured AI workspace on day one, and knowledge compounds ("learn things once").
+How the parts fit, how a request flows, and where the code lives. The reasons behind each
+choice are in [DECISIONS.md](DECISIONS.md) (referenced as D1, D2, ...).
 
-## 1. System Overview
+✅ = working today, 🔨 = being built, 📋 = planned.
 
-```
-┌──────────────────────────────── DESKTOP CLIENT (Electron) ────────────────────────────────┐
-│                                                                                            │
-│  RENDERER (React + Tailwind)                    MAIN PROCESS (Node)                        │
-│  ┌──────────────────────────────┐   IPC   ┌──────────────────────────────────────────┐   │
-│  │ Split panes / tabs (dockview)│◀───────▶│ Session Manager                          │   │
-│  │ Chat · Artifacts · Files     │         │  └─ Agent Runtime (Claude Agent SDK)     │   │
-│  │ Cost meter · Skill picker    │         │      ├─ skills/  (synced from Dojo)      │   │
-│  │ Approvals · Projects         │         │      ├─ memory/  (read-only at start)    │   │
-│  └──────────────────────────────┘         │      ├─ bundled CLIs (gws, data, etc.)   │   │
-│                                           │      └─ subagents → own session panes    │   │
-│                                           │ MCP Connection Pool (connect once)       │   │
-│                                           │ Local Scheduler (cron, headless runs)    │   │
-│                                           │ Permission Broker (local or phone)       │   │
-│                                           │ Auto-updater · SSO token cache           │   │
-│                                           └───────────────┬──────────────────────────┘   │
-└───────────────────────────────────────────────────────────┼──────────────────────────────┘
-                                                            │ HTTPS / WSS
-┌───────────────────────────────── CONTROL PLANE (self-hosted) ─────────────────────────────┐
-│                                                           │                                │
-│  ┌───────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────┴────────┐  ┌──────────────┐   │
-│  │ Auth/SSO  │  │ Connector    │  │ Dojo         │  │ LLM Router   │  │ Session Relay│   │
-│  │ OIDC/SAML │  │ Registry +   │  │ skills svc   │  │ + Metering   │  │ (multiplayer)│   │
-│  │ SCIM      │  │ Token Vault  │  │ (Git/PR bot) │  │ + Budgets    │  │              │   │
-│  └───────────┘  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘   │
-│  ┌───────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
-│  │ Memory    │  │ Company      │  │ Sensei       │  │ Slack Gateway│  │ Analytics +  │   │
-│  │ Synth     │  │ Knowledge    │  │ recommender  │  │ bots·notify· │  │ Feedback     │   │
-│  │ (24h jobs)│  │ (editable)   │  │              │  │ approvals    │  │ triage       │   │
-│  └───────────┘  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘   │
-│                                                                                            │
-│      Postgres (Drizzle) · Redis/BullMQ · S3 (memory files, artifacts) · Git (skills repo)  │
-└────────────────────────────────────────────────────────────────────────────────────────────┘
-        │                    │                        │
-        ▼                    ▼                        ▼
-  ┌───────────┐     ┌─────────────────┐      ┌──────────────────┐
-  │ IdP       │     │ SaaS MCP servers│      │ Model providers  │
-  │ Okta/     │     │ Slack Notion    │      │ Anthropic OpenAI │
-  │ Google    │     │ Linear Gong SF  │      │ Gemini · local   │
-  └───────────┘     │ Snowflake ...   │      └──────────────────┘
-                    └─────────────────┘
-```
+## The big picture
 
-## 2. First Run (zero config)
+One server per company runs one eve agent. Every surface (Slack, web, Claude Code) talks to
+that server, and every person's request runs as that person.
 
 ```
-Install app ──▶ "Sign in with SSO" ──▶ IdP (Okta/Google)
-                                          │ id_token + groups/role
-                                          ▼
-                              Control plane: provision user
-                                          │
-          ┌───────────────────────────────┼───────────────────────────────┐
-          ▼                               ▼                               ▼
-  Connector Registry              Dojo: role-based               Memory Synth: bootstrap
-  central MCP configs,            starter skills                 (collaborators, projects,
-  one-click OAuth per tool        (Sensei picks ~5)              channels, docs, tickets)
-          │                               │                               │
-          └──────────────┬────────────────┴───────────────┬───────────────┘
-                         ▼                                ▼
-            MCP Pool connects ALL servers         skills/ + memory/ synced
-            once (45s → 2s per chat)              to the laptop
-                         └──────────────┬─────────────────┘
-                                        ▼
-                         Ready: first chat, with context
+  Surfaces                     Server (one per company, eve)                    Storage
+ ─────────────                ───────────────────────────────────────────     ──────────────
+  terminal UI  ✅  ─┐         ┌──────────────────────────────────────────┐     ┌────────────┐
+  web chat     📋  ─┤  auth   │ channel: who is calling, which chat      │     │ Postgres   │
+  Slack/Teams  📋  ─┼───────▶ │ (membership check, speaker tags)  ✅     │────▶│ users,     │
+  Claude Code  📋  ─┤         ├──────────────────────────────────────────┤     │ chats,     │
+  meeting bot  📋  ─┘         │ main agent                         ✅     │     │ knowledge, │
+                              │  memory recall: profile/team/company ✅   │     │ agents,    │
+                              │  tools: composio ✅, knowledge search 🔨  │     │ schedules  │
+                              │  policy on every tool call         ✅     │     └────────────┘
+                              │  subagents + workflow fan-out      🔨     │     ┌────────────┐
+                              │  user-defined agents (worker)      📋     │────▶│ git brain  │
+                              ├──────────────────────────────────────────┤     │ (Markdown) │
+                              │ sandbox /workspace/knowledge       🔨     │     └────────────┘
+                              │ schedules: dispatcher every minute 📋     │     ┌────────────┐
+                              └───────────────┬──────────────────────────┘────▶│ AI Gateway │
+                                              │                                │ (models)   │
+                                     Composio (500+ apps, as the user) ✅      └────────────┘
 ```
 
-## 3. One Message, End to End
+## How a request flows
+
+"What did we decide about deploy freezes?" from the member:
 
 ```
-User types in pane
-      │
-      ▼
-Session Manager ── loads ──▶ system prompt + memory/*.md + company knowledge + project memory
-      │
-      ▼
-Agent SDK loop ◀──────────────────────────────────────────────┐
-      │                                                       │
-      ├─▶ LLM call ─▶ Router (pick model) ─▶ provider         │
-      │                 └─▶ meter: tokens/$ per user/project  │
-      │                       └─▶ live cost meter in UI       │
-      │                                                       │
-      ├─▶ Skill match? ─▶ load SKILL.md instructions          │
-      ├─▶ Tool call ─▶ Permission Broker ─┬─ auto-allow       │
-      │                                   ├─ ask in UI        │
-      │                                   └─ push to phone    │
-      │        └─▶ MCP Pool (shared conn) / bundled CLI ──────┤
-      ├─▶ Subagent ─▶ new pane (watch / interrupt)            │
-      └─▶ File written ─▶ auto-open as artifact tab ──────────┘
-      │
-      ▼
-Session log ─▶ Relay (teammates can join) ─▶ Analytics (skill use, stuck points)
+ 1. channel      authenticates member, checks they are in this chat, tags the message
+ 2. memory       recalls relevant profile, team and company entries (as data)
+ 3. knowledge    session start: member's visible documents → /workspace/knowledge   (D14)
+ 4. main agent   grep "deploy freeze" → read 2 files → answer, citing both files
+ 5. policy       any write or send in between is classified and approved or denied  (D19)
+ 6. reply        streamed to the surface; edits and approvals feed memory later
 ```
 
-## 4. Knowledge Compounding Loops (the core idea)
+For a bigger ask ("prep me for tomorrow's three customer calls"), step 4 becomes a dynamic
+workflow: the main agent writes a short program that runs one researcher per customer in
+parallel and merges the results (D10).
+
+## Agents
 
 ```
-           ┌───────────────── SKILLS LOOP (Dojo) ─────────────────┐
-           │                                                       │
- User does great work ─▶ "Save as skill" ─▶ SKILL.md written        │
-           ▲                                   │                   │
-           │                        "Publish" ─▶ PR bot: branch,   │
-           │                                     commit, PR, review│
-           │                                   │                   │
-           │                              merged ─▶ Dojo catalog    │
-           │                                   │                   │
-           └──── Sensei recommends to others ◀─┘ (role, tools, usage)
-
-           ┌───────────────── MEMORY LOOP (24h) ──────────────────┐
-           │                                                       │
- Sessions + Slack/Notion/Calendar/Linear ─▶ Synth worker (headless agent)
-           ▲                                   │ write-once
-           │                                   ▼
-           │                        memory/{people,projects,resources}.md
-           │                                   │ read-only per session
-           └──────── every new session ◀───────┘   (inspectable files)
-
-           ┌──────────────── COMPANY KNOWLEDGE LOOP ──────────────┐
- Agent answers wrong ─▶ user corrects ("exclude US cos w/ UK office")
-           │                                   ▼
-           │                       Knowledge entry (versioned, attributed,
-           │                       scoped: org / team / project)
-           └──────── injected into everyone's context ◀──────────┘
+                       ┌──────────────────────┐
+                       │ main agent (root)    │  handles any task (D9)
+                       └──┬────────┬───────┬──┘
+           built-in agent │        │       │ workflow tool: fan out to N subagents (D10)
+           (copies, same  │        │       │
+            sandbox)      ▼        ▼       ▼
+                    ┌─────────┐ ┌──────────┐ ┌──────────────────────────────┐
+                    │ copy    │ │researcher│ │ worker                       │
+                    │ of root │ │read-only │ │ runs a user-defined agent:   │
+                    └─────────┘ └──────────┘ │ instructions + tools from DB │ (D11)
+                                             └──────────────────────────────┘
+                                                        ▲
+                     schedules/dispatch.ts (every min) ─┘ due agents (D12)
 ```
 
-## 5. Automations and Headless Runs
+| Kind | Where it's defined | When to use |
+|---|---|---|
+| Main agent | `agent/agent.ts`, `agent/instructions.md` | Everything, by default |
+| Copy of the main agent | built-in `agent` tool | Parallel pieces of the same task |
+| Declared subagent | `agent/subagents/<name>/` | A specialist with a narrower prompt or tools |
+| Dynamic workflow | `agent/tools/workflow.ts` (eve's `workflow`) | Fan-out and fan-in decided at runtime |
+| Authored workflow | `defineWorkflowTool` in `agent/tools/` | Fixed steps that wait for people, webhooks or timers |
+| User-defined agent | a row in the `agents` table, run by `worker` | Agents people create in chat |
+| Scheduled agent | `schedule` on that row, run by the dispatcher | Recurring work |
+
+## Knowledge
 
 ```
-Cron (local scheduler, or cloud runner when the laptop is off)
-      │
-      ▼
-Headless session (same skills, memory, MCP) ──▶ needs approval?
-      │                                            │ yes
-      │                                            ▼
-      │                               Slack DM / push: [Approve] [Deny]
-      │                                            │
-      ▼                                            ▼
-Result ──▶ Slack channel / DM / file ◀────── continue
+ sources ──▶ normalize ──▶ knowledge table (Postgres)
+ (Slack,      one Markdown     id, source, url, title, people, ts,
+  docs,       doc per thing    visible_to text[], body
+  meetings)                          │
+                                     │ session start, filtered: caller ∈ visible_to
+                                     ▼
+                        sandbox /workspace/knowledge/<source>/<id>.md
+                                     │
+                     agent: glob → grep → read_file → answer with file citations
 ```
 
-## 6. Recommended Stack
+- Each document is a Markdown file with frontmatter, so agents and people can read it (D15).
+- Permissions are applied when files are written, so search can't leak (D14).
+- The vector index comes later, as a second tool, if the eval shows grep missing vague questions (D13).
 
-| Layer | Choice | Why |
-|-------|--------|-----|
-| Monorepo | pnpm + Turborepo, TypeScript everywhere | One language across the Agent SDK, desktop, and server |
-| Desktop | Electron + React + Tailwind + shadcn/ui, Vite, electron-builder + electron-updater | Agent SDK is Node; this is the proven path (Glass, Open Cowork, OpenWork all use Electron) |
-| Panes | dockview (or react-mosaic) | IDE-style split panes and tabs, persisted layout |
-| Agent | Claude Agent SDK (TS) | Skills (SKILL.md), MCP, subagents, hooks, permissions built in |
-| Model-agnostic | LiteLLM proxy behind the router (Anthropic-compatible endpoint) | Any model; later a custom bandit router (Ramp uses Thompson sampling) |
-| Server | Hono or Fastify, Postgres + Drizzle, Redis + BullMQ, S3/R2 | Simple and self-hostable via docker-compose |
-| Auth | better-auth (OIDC/SAML) or WorkOS for SSO + SCIM | One login → everything |
-| Connector auth | Own token vault (encrypted) + per-tool OAuth; Nango/Composio as an accelerator | Self-healing refresh, central config |
-| Skills | Git repo + GitHub App (Octokit) as the PR bot | Versioned, reviewed, invisible to users |
-| Memory | Markdown files in S3, synced to client; synth = headless Agent SDK job | Inspectable, write-once-read-many |
-| Recommender | pgvector embeddings of skills + usage signals | Sensei v1 is simple ranking |
-| Multiplayer | WebSocket relay of the session event log | Join or take over a session |
-| Slack | Bolt for JS | Channel bots, notifications, approvals |
-| Observability | OpenTelemetry + PostHog | Find stuck points, skill adoption |
+## Memory
 
-## 7. Landscape (what exists, how open-glass differs)
+Three scopes, one git repo each, recalled at the start of every turn (D17):
 
-| Project | Stack | Gap vs Glass |
-|---------|-------|--------------|
-| OpenWork (different-ai) ~24k stars | Electron + React, OpenCode, Den control plane (MCP gateway, skill marketplaces) | Closest. Den is source-available, not MIT. No memory synthesis or company knowledge loop |
-| Open Cowork (OpenCoworkAI) ~2.2k | Electron, Agent SDK runner, VM sandbox, skills, Slack | Single-user; no org control plane |
-| Open Claude Cowork (Composio) ~4.3k | Electron + Express, Agent SDK, Composio 500+ tools | Demo-grade; no SSO, memory, or skills marketplace |
-| Kuse Cowork | Tauri/Rust | Single-user |
-| Claude Cowork / Kay (YakLabs) / Ramp Glass | Closed | Not self-hostable |
+| Scope | Shared with | Who can save |
+|---|---|---|
+| `profile` | only that person | the person |
+| `team` | the team | any member |
+| `company` | everyone | waits for an admin |
 
-**open-glass wedge:** the full org loop (SSO → connectors → Dojo → Sensei → memory synth → editable company knowledge → router + metering), MIT-licensed and self-hostable.
+Details: [BRAIN.md](BRAIN.md).
 
-## 8. Build Phases
+## Trust
 
-| Phase | Ships |
-|-------|-------|
-| 0 | Electron shell + Agent SDK chat, split panes, artifacts, local skills folder, BYO API key |
-| 1 | MCP Connection Pool + 4 connectors (Slack, Notion, Linear, Google) with OAuth + self-heal |
-| 2 | Control plane: SSO, central connector registry, token vault, docker-compose |
-| 3 | Dojo: Git-backed skills + PR bot + catalog UI; Sensei v1 |
-| 4 | Memory synth (24h) + company knowledge edits + Projects (per-project memory) |
-| 5 | Router + metering + budgets + live cost meter |
-| 6 | Scheduler + headless + Slack approvals + Slack channel bots |
-| 7 | Multiplayer sessions, analytics, auto-update fleet management |
+- **Identity:** dev header under `eve dev` today; Google sign-in next.
+- **Chat access:** membership in Postgres, checked on every route.
+- **Actions:** `decide()` in `agent/lib/policy.ts` on every tool call (D19). Details: [ORG.md](ORG.md).
+- **Apps:** Composio as the user, so access never exceeds the person's (D20).
+- **Knowledge:** filtered by `visible_to` before it reaches the sandbox (D14).
+
+## Repo layout
+
+```
+agent/
+  agent.ts                  model selection
+  instructions.md           persona, memory, sharing and approval rules
+  channels/eve.ts           auth, chat membership, speaker tags, /glass/v1/sessions
+  memory/                   profile, team, company slots
+  connections/composio.ts   per-user Composio connection
+  tools/                    share_session, request_spend (stub), knowledge tools 🔨
+  subagents/                researcher 🔨, worker 📋
+  schedules/                dispatcher 📋
+  skills/save-as-skill/     turn a procedure into a skill
+  lib/
+    brain.ts                git-backed memory provider
+    sessions.ts             who is in which chat
+    policy.ts               action classes, decide(), approval adapters
+    composio.ts             Composio tool → action class
+db/                         schema and seed
+docs/                       this file and the rest of the design docs
+```

@@ -1,5 +1,7 @@
-# Local Postgres for open-glass: org, users, teams, memory (and later sessions).
+# Local Postgres for Open Intelligence: org, users, teams, memory (and later sessions).
 #   docker compose up -d && npm run db:migrate
+name: open-intelligence
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -19,3 +21,4 @@ services:
 
 volumes:
   pgdata:
+    name: open-glass_pgdata # keep the existing local data after the repo rename

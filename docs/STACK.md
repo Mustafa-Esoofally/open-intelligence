@@ -1,5 +1,8 @@
 # Stack analysis: what we use, what we build
 
+> **Update 2026-10-27:** we start smaller than this note: Postgres only, agentic search
+> (grep over files) before turbopuffer. See [DECISIONS.md](DECISIONS.md) D8 and D13.
+
 Date: 2026-10-26. Checked against live docs (links inline) and the installed `eve@0.79.0`.
 
 The product loop from the deck, and the piece of the stack behind each step:

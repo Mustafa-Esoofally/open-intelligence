@@ -1,5 +1,9 @@
 # Memory-first RAG: ingestion, retrieval and refresh
 
+> **Update 2026-10-27:** we start with agentic search (grep over permission-filtered
+> files in the eve sandbox) and TypeScript only; the Python data plane and vector index
+> below come later if evals need them. See [DECISIONS.md](DECISIONS.md) D7, D8 and D13.
+
 Date: 2026-10-26. GitHub numbers pulled from the GitHub API on that date. Lessons from production teams that refine this design: [RAG-PRODUCTION.md](RAG-PRODUCTION.md).
 Companion to
 [INFRA.md](INFRA.md) (clients and contracts) and [STACK.md](STACK.md) (buy vs build).

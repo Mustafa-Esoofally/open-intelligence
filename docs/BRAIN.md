@@ -1,4 +1,4 @@
-# open-glass Brain (Memory) Design
+# Open Intelligence Brain (Memory) Design
 
 Research date 2026-10-13. Repos pulled to latest main: vercel/eve, vercel/workflow, Merit-Systems/OpenInstinct, CopilotKit/OpenBot, NousResearch/hermes-agent, prime-agent, plus online docs (eve.dev, Letta, Notion Lore, Zep, mem0, Claude memory tool).
 
